@@ -1,10 +1,18 @@
 // src/App.tsx
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import CreatedJobs from "./pages/CreatedJobs/CreatedJobs";
 import UnpaidJobs from "./pages/UnpaidJobs/UnpaidJobs";
 import Sidebar from "./components/Sidebar/Sidebar";
-import { Box, CssBaseline, createTheme, ThemeProvider } from "@mui/material";
+import NewJobModal from "./components/NewJobModal/NewJobModal";
+
+import {
+  Box,
+  CssBaseline,
+  createTheme,
+  ThemeProvider,
+  Button,
+} from "@mui/material";
 
 const theme = createTheme({
   palette: {
@@ -18,6 +26,11 @@ const theme = createTheme({
 });
 
 const App: React.FC = () => {
+  const [isJobModalOpen, setIsJobModalOpen] = useState(false);
+
+  const toggleJobModal = () => {
+    setIsJobModalOpen(!isJobModalOpen);
+  };
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -28,6 +41,21 @@ const App: React.FC = () => {
             component="main"
             sx={{ flexGrow: 1, p: 3, overflowY: "auto", marginLeft: "240px" }}
           >
+            <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+              <Button
+                onClick={toggleJobModal}
+                variant="contained"
+                color="primary"
+              >
+                Add New Job
+              </Button>
+              {isJobModalOpen && (
+                <NewJobModal
+                  show={isJobModalOpen}
+                  handleClose={toggleJobModal}
+                />
+              )}
+            </Box>
             <Routes>
               <Route path="/created-jobs" element={<CreatedJobs />} />
               <Route path="/unpaid-jobs" element={<UnpaidJobs />} />

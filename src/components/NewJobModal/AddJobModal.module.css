@@ -1,0 +1,20 @@
+.centered-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.modal-dialog-centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+
+.modal-container {
+  position: fixed;
+  padding-left: 1000px;
+  transform: translate(-50%, -50%);
+  z-index: 1050;
+}

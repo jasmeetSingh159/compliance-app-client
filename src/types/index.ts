@@ -19,10 +19,9 @@ export interface Employee {
   licenseState: string;
   licenseType: string;
   mobileNumber: string;
-  status: string;
   firstName: string;
   lastName: string;
-  middleName: string;
+  middleName?: string;
   dateOfBirth: string;
   street: string;
   suburb: string;
@@ -45,13 +44,14 @@ export interface Trailer {
   id: number;
   make: string;
   model: string;
+  registration: string;
   vin: string;
   tare: string;
   grossVehicleMass: string;
 }
 
 export interface Job {
-  jobId: number;
+  jobId: string;
   company: string;
   pickupCity: string;
   dropOffCity: string;
@@ -60,10 +60,10 @@ export interface Job {
   deliveryType: string;
   employee: string;
   truck: string;
-  trailer1: string;
-  trailer2: string;
-  trailer3: string;
-  trailer4: string;
+  trailer1?: string;
+  trailer2?: string;
+  trailer3?: string;
+  trailer4?: string;
   price: number;
   status: string;
   preTrip: boolean;
@@ -72,5 +72,7 @@ export interface Job {
   customerRate: number;
   customerGst: number;
   customerAmount: number;
-  driverPay: number;
+  driverRate: number;
+  driverGst: number;
+  driverAmount: number;
 }

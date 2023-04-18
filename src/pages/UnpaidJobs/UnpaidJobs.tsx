@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Job } from "../../types";
+import { getJobs } from "../../services/apiService";
 import { Box, Typography } from "@mui/material";
+import JobCard from "../../components/JobCard/JobCard";
 
 const UnpaidJobs: React.FC = () => {
-  const [unpaidJobs, setUnpaidJobs] = useState<Job[]>([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
 
   useEffect(() => {
-    // Fetch unpaid jobs data and set it to the state.
-    // Replace this with the actual API call from apiService.ts
-    const fetchUnpaidJobs = async () => {
-      // const data = await apiService.getUnpaidJobs();
-      // setUnpaidJobs(data);
-    };
-
-    fetchUnpaidJobs();
+    async function fetchJobs() {
+      const jobsData = await getJobs();
+      setJobs(jobsData.data.filter((job: Job) => job.status === "Unpaid"));
+    }
+    fetchJobs();
   }, []);
 
   return (
@@ -22,11 +21,8 @@ const UnpaidJobs: React.FC = () => {
         Unpaid Jobs
       </Typography>
       <ul>
-        {unpaidJobs.map((job) => (
-          <li key={job.jobId}>
-            Job ID: {job.jobId}, Company: {job.company}, Amount:{" "}
-            {job.customerAmount}
-          </li>
+        {jobs.map((job) => (
+          <div>"</div>
         ))}
       </ul>
     </Box>
