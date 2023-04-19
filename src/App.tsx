@@ -3,8 +3,10 @@ import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import CreatedJobs from "./pages/CreatedJobs/CreatedJobs";
 import UnpaidJobs from "./pages/UnpaidJobs/UnpaidJobs";
+import ClosedJobs from "./pages/ClosedJobs/ClosedJobs";
 import Sidebar from "./components/Sidebar/Sidebar";
 import NewJobModal from "./components/NewJobModal/NewJobModal";
+import InvoicePage from "./pages/InvoicePage/InvoicePage";
 
 import {
   Box,
@@ -59,6 +61,8 @@ const App: React.FC = () => {
             <Routes>
               <Route path="/created-jobs" element={<CreatedJobs />} />
               <Route path="/unpaid-jobs" element={<UnpaidJobs />} />
+              <Route path="/closed-jobs" element={<ClosedJobs />} />
+              <Route path="/invoice/:jobId" element={<InvoicePage />} />
             </Routes>
           </Box>
         </Box>

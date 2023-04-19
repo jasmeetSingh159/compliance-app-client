@@ -4,6 +4,7 @@ import { getEmployees, getJobs, updateJob } from "../../services/apiService";
 import { Box, Typography } from "@mui/material";
 import JobModal from "../../components/JobModal/JobModal";
 import JobCard from "../../components/JobCard/JobCard";
+import { useNavigate } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -14,15 +15,15 @@ import {
   Button,
 } from "@mui/material";
 
-const CreatedJobs: React.FC = () => {
+const ClosedJobs: React.FC = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
-  // Function to handle opening the JobModal
+  const navigate = useNavigate();
+
   const handleOpenJobModal = (job: Job) => {
-    setSelectedJob(job);
-    setShowModal(true);
+    navigate(`/invoice/${job.jobId}`);
   };
 
   // Function to handle closing the JobModal
@@ -35,7 +36,7 @@ const CreatedJobs: React.FC = () => {
     async function fetchJobs() {
       const jobsData = await getJobs();
 
-      setJobs(jobsData.filter((job: Job) => job.status === "created"));
+      setJobs(jobsData.filter((job: Job) => job.status === "closed"));
     }
 
     fetchJobs();
@@ -49,7 +50,7 @@ const CreatedJobs: React.FC = () => {
   return (
     <Box>
       <Typography variant="h4" sx={{ mb: 3 }}>
-        Created Jobs
+        Closed Jobs
       </Typography>
       <TableContainer>
         <Table>
@@ -74,23 +75,17 @@ const CreatedJobs: React.FC = () => {
               <TableRow key={sjob.jobId}>
                 <JobCard job={sjob} />
                 <TableCell>
-                  <Button onClick={() => handleOpenJobModal(sjob)}>Edit</Button>
+                  <Button onClick={() => handleOpenJobModal(sjob)}>
+                    Email
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
-      {showModal && (
-        <JobModal
-          show={showModal}
-          onClose={handleCloseJobModal}
-          job={selectedJob!}
-          onSubmit={handleSubmit}
-        />
-      )}
     </Box>
   );
 };
 
-export default CreatedJobs;
+export default ClosedJobs;

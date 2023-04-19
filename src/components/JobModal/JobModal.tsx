@@ -83,8 +83,17 @@ const JobModal: React.FC<JobModalProps> = ({
         trailer2,
         trailer3,
         trailer4,
-        price,
-        status: "Unpaid",
+        price: 0,
+        status: "unpaid",
+        preTrip,
+        safeJourneyPlan,
+        pods,
+        customerRate: calculatedCustomerRate,
+        customerGst,
+        customerAmount,
+        driverRate: calculatedDriverRate,
+        driverGst,
+        driverAmount,
       };
       onSubmit(updatedJob);
     }

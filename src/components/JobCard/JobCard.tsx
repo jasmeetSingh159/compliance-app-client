@@ -29,10 +29,22 @@ const JobCard: React.FC<JobCardProps> = ({ job }) => {
   return (
     <>
       <TableCell>{job.jobId}</TableCell>
+      <TableCell>{job.company}</TableCell>
       <TableCell>{job.truck}</TableCell>
+      <TableCell>
+        {job.trailer1}
+        {job.trailer2 ? `${job.trailer2},` : ""}
+        {job.trailer3 ? `${job.trailer3},` : ""}
+        {job.trailer4 ? `${job.trailer4},` : ""}
+      </TableCell>
       <TableCell>{job.pickupDate}</TableCell>
       <TableCell>{job.deliveryDate}</TableCell>
       <TableCell>{getEmployeeName(Number(job.employee))}</TableCell>
+      <TableCell>
+        {job.pickupCity}-&gt;-&gt;{job.dropOffCity}
+      </TableCell>
+      <TableCell>${job.customerAmount}</TableCell>
+      <TableCell>${job.driverAmount}</TableCell>
     </>
   );
 };

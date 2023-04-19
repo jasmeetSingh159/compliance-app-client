@@ -21,6 +21,11 @@ const Sidebar: React.FC = () => {
       icon: <i className="fas fa-money-check-alt"></i>,
       path: "/unpaid-jobs",
     },
+    {
+      text: "Closed Jobs",
+      icon: <i className="fas fa-money-check-alt"></i>,
+      path: "/closed-jobs",
+    },
   ];
 
   return (
