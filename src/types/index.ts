@@ -28,6 +28,20 @@ export interface Employee {
   state: string;
   postcode: string;
   email: string;
+  licenseExpiry: string;
+  status: string;
+  demeritExpiry: string;
+  fatigueType: string;
+  BFMDate: string;
+  BFMStart: string;
+  BFMEnd: string;
+  medicalExpiry: string;
+  policeExpiry: string;
+  WAFatigueExpiry: string;
+  workRightExpiry: string;
+  workRightStatus: string;
+  inductionDate: string;
+  comments: string;
 }
 
 export interface Truck {

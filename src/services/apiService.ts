@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import { Company, Employee, Job, Truck, Trailer } from "../types";
 
-const API_BASE_URL = "http://localhost:5000"; // Replace with your backend server URL
+const API_BASE_URL = `http://localhost:5000`; // Replace with your backend server URL
 
 const apiService = axios.create({
   baseURL: API_BASE_URL,
@@ -9,6 +9,8 @@ const apiService = axios.create({
     "Content-Type": "application/json",
   },
 });
+
+const customer = "FHT";
 
 const mapCompanyData = (data: any[]): Company[] => {
   return data.map((item, index) => ({
@@ -43,6 +45,20 @@ const mapEmployeeData = (data: any[]): Employee[] => {
     state: item[11],
     postcode: item[12],
     email: item[13],
+    licenseExpiry: item[14],
+    status: item[15],
+    demeritExpiry: item[16],
+    fatigueType: item[17],
+    BFMDate: item[18],
+    BFMStart: item[19],
+    BFMEnd: item[20],
+    medicalExpiry: item[21],
+    policeExpiry: item[22],
+    WAFatigueExpiry: item[23],
+    workRightExpiry: item[24],
+    workRightStatus: item[25],
+    inductionDate: item[26],
+    comments: item[27],
   }));
 };
 
@@ -107,45 +123,50 @@ const handleApiResponse = (
 };
 
 export const getCompanies = async () => {
-  const response = await apiService.get("/companies");
+  const response = await apiService.get(`/companies/${customer}`);
   return handleApiResponse(response, mapCompanyData);
 };
 
 export const getEmployees = async () => {
-  const response = await apiService.get("/employees");
+  const response = await apiService.get(`/employees/${customer}`);
   return handleApiResponse(response, mapEmployeeData);
 };
 
 export const getTrucks = async () => {
-  const response = await apiService.get("/trucks");
+  const response = await apiService.get(`/trucks/${customer}`);
   return mapTruckData(response.data);
 };
 
 export const getTrailers = async () => {
-  const response = await apiService.get("/trailers");
+  const response = await apiService.get(`/trailers/${customer}`);
   return mapTrailerData(response.data);
 };
 
 export const getJobs = async () => {
-  const response = await apiService.get("/jobs");
+  const response = await apiService.get(`/jobs/${customer}`);
   return handleApiResponse(response, mapJobData);
 };
 
 export const getJobById = async (jobId: string) => {
-  const response = await apiService.get(`/jobs/${jobId}`);
+  const response = await apiService.get(`/jobs//${customer}/${jobId}`);
   return handleApiResponse(response, mapJobData)[0];
 };
 
 export const createJob = async (jobData: object) => {
-  return await apiService.post("/jobs", jobData);
+  return await apiService.post(`/jobs/${customer}`, jobData);
 };
 
 export const updateJob = async (jobId: string, jobData: object) => {
-  return await apiService.put(`/jobs/${jobId}`, jobData);
+  return await apiService.put(`/jobs/${customer}/${jobId}`, jobData);
 };
 
 export const deleteJob = async (jobId: string) => {
-  return await apiService.delete(`/jobs/${jobId}`);
+  return await apiService.delete(`/jobs/${customer}/${jobId}`);
+};
+
+export const getImage = async (fileName: string, type: string) => {
+  const response = await apiService.get(`/images/${fileName}/${type}`);
+  return response.data.url;
 };
 
 export default apiService;
