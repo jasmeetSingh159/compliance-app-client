@@ -66,19 +66,12 @@ const ClosedJobs: React.FC = () => {
               <TableCell>Trip</TableCell>
               <TableCell>Customer Amount</TableCell>
               <TableCell>Driver Amount</TableCell>
-
-              <TableCell></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {jobs.map((sjob: Job) => (
               <TableRow key={sjob.jobId}>
                 <JobCard job={sjob} />
-                <TableCell>
-                  <Button onClick={() => handleOpenJobModal(sjob)}>
-                    Email
-                  </Button>
-                </TableCell>
               </TableRow>
             ))}
           </TableBody>

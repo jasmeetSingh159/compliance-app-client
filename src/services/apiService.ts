@@ -94,24 +94,36 @@ const mapJobData = (data: any[]): Job[] => {
 const mapTruckData = (truckData: any[]): Truck[] => {
   return truckData.map((t, index) => ({
     id: index + 1,
-    model: t[0],
-    registration: t[1],
-    vin: t[2],
-    tare: t[3],
-    grossVehicleMass: t[4],
-    make: t[5],
+    registration: t[0],
+    vin: t[1],
+    make: t[2],
+    fleetNumber: t[3],
+    regoState: t[4],
+    status: t[5],
+    regoExp: t[6],
+    lastService: t[7],
+    lastServiceDate: t[8],
+    nextService: t[9],
+    nextServiceDate: t[10],
+    buildYear: t[11],
   }));
 };
 
-const mapTrailerData = (trailerData: any[]): Trailer[] => {
-  return trailerData.map((t, index) => ({
+const mapTrailerData = (truckData: any[]): Trailer[] => {
+  return truckData.map((t, index) => ({
     id: index + 1,
-    make: t[0],
-    model: t[1],
-    registration: t[2],
-    vin: t[3],
-    tare: t[4],
-    grossVehicleMass: t[5],
+    registration: t[0],
+    vin: t[1],
+    make: t[2],
+    fleetNumber: t[3],
+    regoState: t[4],
+    status: t[5],
+    regoExp: t[6],
+    lastService: t[7],
+    lastServiceDate: t[8],
+    nextService: t[9],
+    nextServiceDate: t[10],
+    buildYear: t[11],
   }));
 };
 

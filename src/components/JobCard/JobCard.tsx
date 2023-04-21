@@ -43,8 +43,12 @@ const JobCard: React.FC<JobCardProps> = ({ job }) => {
       <TableCell>
         {job.pickupCity}-&gt;-&gt;{job.dropOffCity}
       </TableCell>
-      <TableCell>${job.customerAmount}</TableCell>
-      <TableCell>${job.driverAmount}</TableCell>
+      <TableCell>
+        {job.customerAmount != null ? `$${job.customerAmount}` : "Not added"}
+      </TableCell>
+      <TableCell>
+        {job.driverAmount != null ? `$${job.driverAmount}` : "Not added"}
+      </TableCell>
     </>
   );
 };

@@ -22,8 +22,17 @@ const UnpaidJobs: React.FC = () => {
 
   const navigate = useNavigate();
 
-  const handleOpenJobModal = (job: Job) => {
-    navigate(`/invoice/${job.jobId}`);
+  const delay = (ms: number) =>
+    new Promise((resolve) => setTimeout(resolve, ms));
+
+  const handleOpenJobModal = async (job: Job) => {
+    let newJob: Job = job;
+    newJob.status = "closed";
+    updateJob(newJob.jobId, newJob);
+
+    await delay(100);
+    window.location.reload();
+    //navigate(`/invoice/${job.jobId}`); Set this in next version
   };
 
   // Function to handle closing the JobModal
@@ -76,7 +85,7 @@ const UnpaidJobs: React.FC = () => {
                 <JobCard job={sjob} />
                 <TableCell>
                   <Button onClick={() => handleOpenJobModal(sjob)}>
-                    Email
+                    Close{/*Email set this in next version*/}
                   </Button>
                 </TableCell>
               </TableRow>

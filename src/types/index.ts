@@ -46,22 +46,50 @@ export interface Employee {
 
 export interface Truck {
   id: number;
-  model: string;
   registration: string;
   vin: string;
-  tare: string;
-  grossVehicleMass: string;
   make: string;
+  fleetNumber: string;
+  regoState: string;
+  status: string;
+  regoExp: string;
+  lastService: string;
+  lastServiceDate: string;
+  nextService: string;
+  nextServiceDate: string;
+  buildYear: string;
 }
 
 export interface Trailer {
   id: number;
-  make: string;
-  model: string;
   registration: string;
   vin: string;
-  tare: string;
-  grossVehicleMass: string;
+  make: string;
+  fleetNumber: string;
+  regoState: string;
+  status: string;
+  regoExp: string;
+  lastService: string;
+  lastServiceDate: string;
+  nextService: string;
+  nextServiceDate: string;
+  buildYear: string;
+}
+
+export interface Vehicle {
+  id: number;
+  registration: string;
+  vin: string;
+  make: string;
+  fleetNumber: string;
+  regoState: string;
+  status: string;
+  regoExp: string;
+  lastService: string;
+  lastServiceDate: string;
+  nextService: string;
+  nextServiceDate: string;
+  buildYear: string;
 }
 
 export interface Job {

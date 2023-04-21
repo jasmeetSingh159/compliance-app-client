@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Employee, Job } from "../../types";
 import { getEmployees, updateJob } from "../../services/apiService";
-import { Box, Typography } from "@mui/material";
+import { Box, rgbToHex, Typography } from "@mui/material";
 import DriverCard from "../../components/DriverCard/DriverCard";
 import {
   Table,
@@ -11,6 +11,7 @@ import {
   TableHead,
   TableRow,
   Button,
+  TextField,
 } from "@mui/material";
 import DriverDetails from "../../components/DriverDetails/DriverDetails";
 
@@ -18,6 +19,7 @@ const Drivers: React.FC = () => {
   const [drivers, setDrivers] = useState<Employee[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedDriver, setSelectedDriver] = useState<Employee | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Function to handle opening the JobModal
   const handleOpenJobModal = (driver: Employee) => {
@@ -41,11 +43,32 @@ const Drivers: React.FC = () => {
     fetchDriver();
   }, []);
 
+  const parseDate = (str: string) => {
+    const [day, month, year] = str.split("/");
+    return new Date(Number(year), Number(month) - 1, Number(day));
+  };
+
+  const filteredDrivers = drivers.filter((driver) => {
+    const name = `${driver.firstName} ${driver.middleName} ${driver.lastName}`;
+    return (
+      name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      driver.licenseNumber.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
+
   return (
     <Box>
       <Typography variant="h4" sx={{ mb: 3 }}>
         Drivers
       </Typography>
+
+      <TextField
+        label="Search"
+        variant="outlined"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        sx={{ marginBottom: 3 }}
+      />
 
       <TableContainer>
         <Table>
@@ -59,7 +82,7 @@ const Drivers: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {drivers.map((driver: Employee) => (
+            {filteredDrivers.map((driver: Employee) => (
               <>
                 <TableRow key={driver.id}>
                   <TableCell>
@@ -68,7 +91,20 @@ const Drivers: React.FC = () => {
                   <TableCell>
                     {driver.mobileNumber ? driver.mobileNumber : driver.email}
                   </TableCell>
-                  <TableCell>{driver.licenseNumber}</TableCell>
+                  <TableCell
+                    style={
+                      parseDate(driver.licenseExpiry) < new Date()
+                        ? { backgroundColor: `rgba(255, 0, 0,0.5)` }
+                        : parseDate(driver.licenseExpiry) <
+                          new Date(
+                            new Date().setDate(new Date().getDate() + 14)
+                          )
+                        ? { backgroundColor: `rgba(255, 165, 0,0.5)` }
+                        : {}
+                    }
+                  >
+                    {driver.licenseNumber}
+                  </TableCell>
                   <TableCell>{driver.fatigueType}</TableCell>
                   <TableCell>
                     <Button onClick={() => handleOpenJobModal(driver)}>

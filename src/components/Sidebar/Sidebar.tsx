@@ -26,6 +26,16 @@ const Sidebar: React.FC = () => {
       icon: <i className="fas fa-money-check-alt"></i>,
       path: "/closed-jobs",
     },
+    {
+      text: "Drivers",
+      icon: <i className="fas fa-money-check-alt"></i>,
+      path: "/drivers",
+    },
+    {
+      text: "Vehicles",
+      icon: <i className="fas fa-money-check-alt"></i>,
+      path: "/vehicles",
+    },
   ];
 
   return (

@@ -67,6 +67,9 @@ const JobModal: React.FC<JobModalProps> = ({
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
+    if (calculatedCustomerRate === 0 || calculatedDriverRate === 0) {
+      alert("Please enter pay amounts to submit");
+    }
 
     if (job) {
       const updatedJob = {

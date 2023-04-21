@@ -41,6 +41,10 @@ const DriverDetails: React.FC<DriverDetailsProps> = ({
   const StyledFormControl = styled(FormControl)(({ theme }) => ({
     marginBottom: theme.spacing(2),
   }));
+  const parseDate = (str: string) => {
+    const [day, month, year] = str.split("/");
+    return new Date(Number(year), Number(month) - 1, Number(day));
+  };
 
   return (
     <StyledFormControl fullWidth>
@@ -120,7 +124,21 @@ const DriverDetails: React.FC<DriverDetailsProps> = ({
                   <strong>Email:</strong> {driver.email}
                 </Typography>
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid
+                item
+                xs={12}
+                md={6}
+                style={
+                  driver.licenseExpiry
+                    ? parseDate(driver.licenseExpiry!) < new Date()
+                      ? { backgroundColor: `rgba(255, 0, 0,0.5)` }
+                      : parseDate(driver.licenseExpiry!) <
+                        new Date(new Date().setDate(new Date().getDate() + 14))
+                      ? { backgroundColor: `rgba(255, 165, 0,0.5)` }
+                      : {}
+                    : {}
+                }
+              >
                 <Typography variant="body1" gutterBottom>
                   <strong>License Expiry:</strong> {driver.licenseExpiry}
                 </Typography>
@@ -130,7 +148,21 @@ const DriverDetails: React.FC<DriverDetailsProps> = ({
                   <strong>Status:</strong> {driver.status}
                 </Typography>
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid
+                item
+                xs={12}
+                md={6}
+                style={
+                  driver.demeritExpiry
+                    ? parseDate(driver.demeritExpiry) < new Date()
+                      ? { backgroundColor: `rgba(255, 0, 0,0.5)` }
+                      : parseDate(driver.demeritExpiry) <
+                        new Date(new Date().setDate(new Date().getDate() + 14))
+                      ? { backgroundColor: `rgba(255, 165, 0,0.5)` }
+                      : {}
+                    : {}
+                }
+              >
                 <Typography variant="body1" gutterBottom>
                   <strong>Demerit Expiry:</strong> {driver.demeritExpiry}
                 </Typography>
@@ -155,22 +187,78 @@ const DriverDetails: React.FC<DriverDetailsProps> = ({
                   <strong>BFM End:</strong> {driver.BFMEnd}
                 </Typography>
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid
+                item
+                xs={12}
+                md={6}
+                style={
+                  driver.demeritExpiry
+                    ? parseDate(driver.medicalExpiry) < new Date()
+                      ? { backgroundColor: `rgba(255, 0, 0,0.5)` }
+                      : parseDate(driver.medicalExpiry) <
+                        new Date(new Date().setDate(new Date().getDate() + 14))
+                      ? { backgroundColor: `rgba(255, 165, 0,0.5)` }
+                      : {}
+                    : {}
+                }
+              >
                 <Typography variant="body1" gutterBottom>
                   <strong>Medical Expiry:</strong> {driver.medicalExpiry}
                 </Typography>
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid
+                item
+                xs={12}
+                md={6}
+                style={
+                  driver.policeExpiry
+                    ? parseDate(driver.policeExpiry) < new Date()
+                      ? { backgroundColor: `rgba(255, 0, 0,0.5)` }
+                      : parseDate(driver.policeExpiry) <
+                        new Date(new Date().setDate(new Date().getDate() + 14))
+                      ? { backgroundColor: `rgba(255, 165, 0,0.5)` }
+                      : {}
+                    : {}
+                }
+              >
                 <Typography variant="body1" gutterBottom>
                   <strong>Police Expiry:</strong> {driver.policeExpiry}
                 </Typography>
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid
+                item
+                xs={12}
+                md={6}
+                style={
+                  driver.WAFatigueExpiry
+                    ? parseDate(driver.WAFatigueExpiry) < new Date()
+                      ? { backgroundColor: `rgba(255, 0, 0,0.5)` }
+                      : parseDate(driver.WAFatigueExpiry) <
+                        new Date(new Date().setDate(new Date().getDate() + 14))
+                      ? { backgroundColor: `rgba(255, 165, 0,0.5)` }
+                      : {}
+                    : {}
+                }
+              >
                 <Typography variant="body1" gutterBottom>
                   <strong>WA Fatigue Expiry:</strong> {driver.WAFatigueExpiry}
                 </Typography>
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid
+                item
+                xs={12}
+                md={6}
+                style={
+                  driver.workRightExpiry
+                    ? parseDate(driver.workRightExpiry) < new Date()
+                      ? { backgroundColor: `rgba(255, 0, 0,0.5)` }
+                      : parseDate(driver.workRightExpiry) <
+                        new Date(new Date().setDate(new Date().getDate() + 14))
+                      ? { backgroundColor: `rgba(255, 165, 0,0.5)` }
+                      : {}
+                    : {}
+                }
+              >
                 <Typography variant="body1" gutterBottom>
                   <strong>Work Right Expiry:</strong> {driver.workRightExpiry}
                 </Typography>

@@ -101,6 +101,20 @@ const NewJobModal: React.FC<NewJobModalProps> = ({ show, handleClose }) => {
     const t2 = trailer2 ? trailer2 : "";
     const t3 = trailer3 ? trailer3 : "";
     const t4 = trailer4 ? trailer4 : "";
+
+    if (
+      !company ||
+      !pickupCity ||
+      !dropOffCity ||
+      !pickupDate ||
+      !deliveryDate ||
+      !employee ||
+      !truck
+    ) {
+      alert("Please fill in all fields");
+      return;
+    }
+
     const jobData = {
       jobId,
       company,
@@ -116,7 +130,7 @@ const NewJobModal: React.FC<NewJobModalProps> = ({ show, handleClose }) => {
       trailer3: t3,
       trailer4: t4,
       price,
-      status: "",
+      status: "created",
       preTrip: "",
       safeJourneyPlan: "",
       pods: "",

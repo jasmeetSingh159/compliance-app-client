@@ -16,6 +16,7 @@ import {
   Button,
 } from "@mui/material";
 import Drivers from "./pages/Drivers/Drivers";
+import Vehicles from "./pages/Vehicles/Vehicles";
 
 const theme = createTheme({
   palette: {
@@ -63,7 +64,8 @@ const App: React.FC = () => {
               <Route path="/created-jobs" element={<CreatedJobs />} />
               <Route path="/unpaid-jobs" element={<UnpaidJobs />} />
               <Route path="/closed-jobs" element={<ClosedJobs />} />
-              <Route path="/Drivers" element={<Drivers />} />
+              <Route path="/drivers" element={<Drivers />} />
+              <Route path="/vehicles" element={<Vehicles />} />
               <Route path="/invoice/:jobId" element={<InvoicePage />} />
             </Routes>
           </Box>
