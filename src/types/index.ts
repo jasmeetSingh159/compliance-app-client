@@ -95,6 +95,7 @@ export interface Vehicle {
 export interface Job {
   jobId: string;
   company: string;
+  manifest: string;
   pickupCity: string;
   dropOffCity: string;
   pickupDate: string;
@@ -106,7 +107,7 @@ export interface Job {
   trailer2?: string;
   trailer3?: string;
   trailer4?: string;
-  price: number;
+  comments: string;
   status: string;
   preTrip: boolean;
   safeJourneyPlan: boolean;

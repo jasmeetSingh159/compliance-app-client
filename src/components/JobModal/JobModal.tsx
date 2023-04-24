@@ -1,23 +1,49 @@
-import React, { useState } from "react";
-import { Job } from "../../types";
+import React, { useState, useEffect } from "react";
+import { Company, Employee, Truck, Trailer, Job } from "../../types";
+import {
+  getCompanies,
+  getEmployees,
+  getTrucks,
+  getTrailers,
+} from "../../services/apiService";
 import {
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  FormControl,
   FormControlLabel,
   Checkbox,
   TextField,
   Button,
+  FormHelperText,
   Grid,
   Chip,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
 } from "@mui/material";
 import { styled } from "@mui/system";
+import Autocomplete from "@mui/lab/Autocomplete";
 
 const StyledFormControl = styled(FormControl)(({ theme }) => ({
   marginBottom: theme.spacing(2),
 }));
+
+const cityOptions = [
+  "BNE",
+  "MEL",
+  "SYD",
+  "ADE",
+  "GEX",
+  "NTL",
+  "PER",
+  "YCDS",
+  "CANB",
+  "OTHER",
+];
+
+const deliveryTypeOptions = ["Semi", "BDouble", "ATriple", "Road Train"];
 
 interface JobModalProps {
   show: boolean;
@@ -63,7 +89,49 @@ const JobModal: React.FC<JobModalProps> = ({
   const [trailer2, setTrailer2] = useState(job?.trailer2 || "");
   const [trailer3, setTrailer3] = useState(job?.trailer3 || "");
   const [trailer4, setTrailer4] = useState(job?.trailer4 || "");
-  const [price, setPrice] = useState(job?.price || 0);
+  const [comments, setComments] = useState(job?.comments || "");
+  const [manifest, setManifest] = useState(job?.manifest || "");
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [trucks, setTrucks] = useState<Truck[]>([]);
+  const [trailers, setTrailers] = useState<Trailer[]>([]);
+
+  const fetchCompanies = async () => {
+    const fetchedCompanies = await getCompanies();
+    setCompanies(fetchedCompanies);
+  };
+
+  const fetchEmployees = async () => {
+    const fetchedEmployees = await getEmployees();
+    const filteredEmployees = fetchedEmployees.filter(
+      (driver: Employee) => driver.status === "Current"
+    );
+    setEmployees(filteredEmployees);
+  };
+
+  const fetchTrucks = async () => {
+    const fetchedTrucks = await getTrucks();
+    const filteredTrucks = fetchedTrucks.filter(
+      (truck: Truck) => truck.status === "active"
+    );
+
+    setTrucks(filteredTrucks);
+  };
+
+  const fetchTrailers = async () => {
+    const fetchedTrailers = await getTrailers();
+    const filteredTrailers = fetchedTrailers.filter(
+      (trailer: Trailer) => trailer.status === "active"
+    );
+    setTrailers(filteredTrailers);
+  };
+
+  useEffect(() => {
+    fetchCompanies();
+    fetchEmployees();
+    fetchTrucks();
+    fetchTrailers();
+  }, []);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -74,29 +142,30 @@ const JobModal: React.FC<JobModalProps> = ({
     if (job) {
       const updatedJob = {
         ...job,
-        company,
-        pickupCity,
-        dropOffCity,
-        pickupDate,
-        deliveryDate,
-        deliveryType,
-        employee,
-        truck,
-        trailer1,
-        trailer2,
-        trailer3,
-        trailer4,
-        price: 0,
+        company: company,
+        manifest: manifest,
+        pickupCity: pickupCity,
+        dropOffCity: dropOffCity,
+        pickupDate: pickupDate,
+        deliveryDate: deliveryDate,
+        deliveryType: deliveryType,
+        employee: employee,
+        truck: truck,
+        trailer1: trailer1,
+        trailer2: trailer2,
+        trailer3: trailer3,
+        trailer4: trailer4,
+        comments: comments,
         status: "unpaid",
-        preTrip,
-        safeJourneyPlan,
-        pods,
+        preTrip: preTrip,
+        safeJourneyPlan: safeJourneyPlan,
+        pods: pods,
         customerRate: calculatedCustomerRate,
-        customerGst,
-        customerAmount,
+        customerGst: customerGst,
+        customerAmount: customerAmount,
         driverRate: calculatedDriverRate,
-        driverGst,
-        driverAmount,
+        driverGst: driverGst,
+        driverAmount: driverAmount,
       };
       onSubmit(updatedJob);
     }
@@ -164,6 +233,11 @@ const JobModal: React.FC<JobModalProps> = ({
     }
   };
 
+  const parseDate = (str: string) => {
+    const [day, month, year] = str.split("/");
+    return new Date(Number(year), Number(month) - 1, Number(day));
+  };
+
   return (
     <StyledFormControl fullWidth>
       <Dialog open={show} onClose={onClose} maxWidth="xl" fullWidth>
@@ -172,118 +246,276 @@ const JobModal: React.FC<JobModalProps> = ({
         <DialogContent>
           <Grid container spacing={4}>
             <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Company"
-                value={company}
-                onChange={(e) => setCompany(e.target.value)}
-              />
+              <FormControl fullWidth margin="normal" variant="outlined">
+                <Autocomplete
+                  value={company}
+                  onChange={(event, newValue) => {
+                    setCompany(newValue!);
+                  }}
+                  options={companies.map((company) => company.name)}
+                  getOptionLabel={(option) => option}
+                  renderOption={(props, option) => (
+                    <MenuItem {...props} key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  )}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Company" variant="outlined" />
+                  )}
+                />
+                <FormHelperText />
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <FormControl fullWidth margin="normal">
+                <TextField
+                  label="Manifest"
+                  variant="outlined"
+                  value={manifest}
+                  onChange={(e) => setManifest(e.target.value)}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <FormControl fullWidth margin="normal">
+                <InputLabel htmlFor="pickup">Pickup City</InputLabel>
+                <Select
+                  label="Pickup City"
+                  inputProps={{
+                    name: "pickup",
+                    id: "pickup",
+                  }}
+                  value={pickupCity}
+                  onChange={(e) => setPickupCity(e.target.value)}
+                >
+                  {cityOptions.map((city) => (
+                    <MenuItem key={city} value={city}>
+                      {city}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <FormControl fullWidth margin="normal">
+                <InputLabel htmlFor="delivery">Delivery City</InputLabel>
+                <Select
+                  label="Delivery City"
+                  inputProps={{
+                    name: "delivery",
+                    id: "delivery",
+                  }}
+                  value={dropOffCity}
+                  onChange={(e) => setDropOffCity(e.target.value)}
+                >
+                  {cityOptions.map((city) => (
+                    <MenuItem key={city} value={city}>
+                      {city}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField
-                fullWidth
-                label="Pickup City"
-                value={pickupCity}
-                onChange={(e) => setPickupCity(e.target.value)}
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Drop-off City"
-                value={dropOffCity}
-                onChange={(e) => setDropOffCity(e.target.value)}
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
+                id="pickupDate"
                 label="Pickup Date"
                 type="date"
                 value={pickupDate}
+                onChange={(e) => setPickupDate(e.target.value)}
                 InputLabelProps={{
                   shrink: true,
                 }}
-                onChange={(e) => setPickupDate(e.target.value)}
+                variant="outlined"
+                fullWidth
+                margin="normal"
               />
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField
-                fullWidth
+                id="deliveryDate"
                 label="Delivery Date"
                 type="date"
                 value={deliveryDate}
+                onChange={(e) => setDeliveryDate(e.target.value)}
                 InputLabelProps={{
                   shrink: true,
                 }}
-                onChange={(e) => setDeliveryDate(e.target.value)}
+                variant="outlined"
+                fullWidth
+                margin="normal"
               />
             </Grid>
             <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Delivery Type"
-                value={deliveryType}
-                onChange={(e) => setDeliveryType(e.target.value)}
-              />
+              <FormControl fullWidth margin="normal">
+                <InputLabel>Delivery Type</InputLabel>
+                <Select
+                  value={deliveryType}
+                  onChange={(e) => setDeliveryType(e.target.value)}
+                >
+                  {deliveryTypeOptions.map((type) => (
+                    <MenuItem key={type} value={type}>
+                      {type}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
             <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Employee"
-                value={employee}
-                onChange={(e) => setEmployee(e.target.value)}
-              />
+              <FormControl fullWidth margin="normal">
+                <Autocomplete
+                  value={employee}
+                  onChange={(event, newValue) => {
+                    setEmployee(newValue!);
+                  }}
+                  options={employees.map(
+                    (employee) => `${employee.firstName} ${employee.lastName}`
+                  )}
+                  getOptionLabel={(option) => `${option}`}
+                  renderOption={(props, option) => {
+                    return (
+                      <MenuItem {...props} key={option} value={option}>
+                        {`${option}`}
+                      </MenuItem>
+                    );
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Employee"
+                      variant="outlined"
+                    />
+                  )}
+                />
+              </FormControl>
             </Grid>
             <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Truck"
-                value={truck}
-                onChange={(e) => setTruck(e.target.value)}
-              />
+              <FormControl fullWidth margin="normal">
+                <Autocomplete
+                  value={truck}
+                  onChange={(event, newValue) => {
+                    setTruck(newValue!);
+                  }}
+                  options={trucks.map((truck) => truck.registration)}
+                  getOptionLabel={(option) => option}
+                  renderOption={(props, option) => {
+                    return (
+                      <MenuItem {...props} key={option} value={option}>
+                        {option}
+                      </MenuItem>
+                    );
+                  }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Truck" variant="outlined" />
+                  )}
+                />
+              </FormControl>
             </Grid>
             <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Trailer 1"
-                value={trailer1}
-                onChange={(e) => setTrailer1(e.target.value)}
-              />
+              <FormControl fullWidth margin="normal">
+                <Autocomplete
+                  value={trailer1}
+                  onChange={(event, newValue) => {
+                    setTrailer1(newValue!);
+                  }}
+                  options={trailers.map((trailer) => trailer.registration)}
+                  getOptionLabel={(option) => option}
+                  renderOption={(props, option) => {
+                    return (
+                      <MenuItem {...props} key={option} value={option}>
+                        {option}
+                      </MenuItem>
+                    );
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Trailer1"
+                      variant="outlined"
+                    />
+                  )}
+                />
+              </FormControl>
             </Grid>
             <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Trailer 2"
-                value={trailer2}
-                onChange={(e) => setTrailer2(e.target.value)}
-              />
+              <FormControl fullWidth margin="normal">
+                <Autocomplete
+                  value={trailer2}
+                  onChange={(event, newValue) => {
+                    setTrailer2(newValue!);
+                  }}
+                  options={trailers.map((trailer) => trailer.registration)}
+                  getOptionLabel={(option) => option}
+                  renderOption={(props, option) => {
+                    return (
+                      <MenuItem {...props} key={option} value={option}>
+                        {option}
+                      </MenuItem>
+                    );
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Trailer2"
+                      variant="outlined"
+                    />
+                  )}
+                />
+              </FormControl>
             </Grid>
             <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Trailer 3"
-                value={trailer3}
-                onChange={(e) => setTrailer3(e.target.value)}
-              />
+              <FormControl fullWidth margin="normal">
+                <Autocomplete
+                  value={trailer3}
+                  onChange={(event, newValue) => {
+                    setTrailer3(newValue!);
+                  }}
+                  options={trailers.map((trailer) => trailer.registration)}
+                  getOptionLabel={(option) => option}
+                  renderOption={(props, option) => {
+                    return (
+                      <MenuItem {...props} key={option} value={option}>
+                        {option}
+                      </MenuItem>
+                    );
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Trailer3"
+                      variant="outlined"
+                    />
+                  )}
+                />
+              </FormControl>
             </Grid>
             <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Trailer 4"
-                value={trailer4}
-                onChange={(e) => setTrailer4(e.target.value)}
-              />
+              <FormControl fullWidth margin="normal">
+                <Autocomplete
+                  value={trailer4}
+                  onChange={(event, newValue) => {
+                    setTrailer4(newValue!);
+                  }}
+                  options={trailers.map((trailer) => trailer.registration)}
+                  getOptionLabel={(option) => option}
+                  renderOption={(props, option) => {
+                    return (
+                      <MenuItem {...props} key={option} value={option}>
+                        {option}
+                      </MenuItem>
+                    );
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Trailer4"
+                      variant="outlined"
+                    />
+                  )}
+                />
+              </FormControl>
             </Grid>
             <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Price"
-                type="number"
-                value={price}
-                onChange={(e) => setPrice(Number(e.target.value))}
-              />
-
               <Grid item xs={12} md={6}>
                 <FormControl component="fieldset">
                   <FormControlLabel

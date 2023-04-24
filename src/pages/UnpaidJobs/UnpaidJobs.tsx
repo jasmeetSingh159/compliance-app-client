@@ -30,8 +30,6 @@ const UnpaidJobs: React.FC = () => {
     newJob.status = "closed";
     updateJob(newJob.jobId, newJob);
 
-    await delay(100);
-    window.location.reload();
     //navigate(`/invoice/${job.jobId}`); Set this in next version
   };
 
@@ -44,7 +42,7 @@ const UnpaidJobs: React.FC = () => {
   useEffect(() => {
     async function fetchJobs() {
       const jobsData = await getJobs();
-
+      console.log(jobsData);
       setJobs(jobsData.filter((job: Job) => job.status === "unpaid"));
     }
 

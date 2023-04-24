@@ -67,7 +67,8 @@ const NewJobModal: React.FC<NewJobModalProps> = ({ show, handleClose }) => {
   const [trailers, setTrailers] = useState<Trailer[]>([]);
   const [pickupDate, setPickupDate] = useState(String);
   const [deliveryDate, setDeliveryDate] = useState(String);
-  const [price, setPrice] = useState(Number);
+  const [comments, setComments] = useState(String);
+  const [manifest, setManifest] = useState("");
 
   const fetchCompanies = async () => {
     const fetchedCompanies = await getCompanies();
@@ -108,10 +109,10 @@ const NewJobModal: React.FC<NewJobModalProps> = ({ show, handleClose }) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const t1 = trailer1 ? trailer1 : "";
-    const t2 = trailer2 ? trailer2 : "";
-    const t3 = trailer3 ? trailer3 : "";
-    const t4 = trailer4 ? trailer4 : "";
+    const t1 = trailer1 ? trailer1.registration : "";
+    const t2 = trailer2 ? trailer2.registration : "";
+    const t3 = trailer3 ? trailer3.registration : "";
+    const t4 = trailer4 ? trailer4.registration : "";
 
     if (
       !company ||
@@ -128,19 +129,20 @@ const NewJobModal: React.FC<NewJobModalProps> = ({ show, handleClose }) => {
 
     const jobData = {
       jobId,
-      company,
-      pickupCity,
-      dropOffCity,
-      pickupDate,
-      deliveryDate,
-      deliveryType,
-      employee,
-      truck,
+      company: company.name,
+      manifest: manifest,
+      pickupCity: pickupCity,
+      dropOffCity: dropOffCity,
+      pickupDate: pickupDate,
+      deliveryDate: deliveryDate,
+      deliveryType: deliveryType,
+      employee: employee.employeeNumber,
+      truck: truck.registration,
       trailer1: t1,
       trailer2: t2,
       trailer3: t3,
       trailer4: t4,
-      price,
+      comments,
       status: "created",
       preTrip: "",
       safeJourneyPlan: "",
@@ -177,23 +179,31 @@ const NewJobModal: React.FC<NewJobModalProps> = ({ show, handleClose }) => {
               InputProps={{ readOnly: true }}
             />
             <FormControl fullWidth margin="normal" variant="outlined">
-              <InputLabel htmlFor="company-select">Company</InputLabel>
-              <Select
+              <Autocomplete
                 value={company}
-                onChange={(e) => setCompany(e.target.value as Company)}
-                label="Company"
-                inputProps={{
-                  name: "company",
-                  id: "company-select",
+                onChange={(event, newValue) => {
+                  setCompany(newValue as Company);
                 }}
-              >
-                {companies.map((comp) => (
-                  <MenuItem key={comp.name} value={comp.name}>
-                    {comp.name}
+                options={companies}
+                getOptionLabel={(option) => option.name}
+                renderOption={(props, option) => (
+                  <MenuItem {...props} key={option.name} value={option.name}>
+                    {option.name}
                   </MenuItem>
-                ))}
-              </Select>
+                )}
+                renderInput={(params) => (
+                  <TextField {...params} label="Company" variant="outlined" />
+                )}
+              />
               <FormHelperText />
+            </FormControl>
+            <FormControl fullWidth margin="normal">
+              <TextField
+                label="Manifest"
+                variant="outlined"
+                value={manifest}
+                onChange={(e) => setManifest(e.target.value)}
+              />
             </FormControl>
             <FormControl fullWidth margin="normal">
               <InputLabel htmlFor="pickup">Pickup City</InputLabel>
@@ -273,220 +283,266 @@ const NewJobModal: React.FC<NewJobModalProps> = ({ show, handleClose }) => {
             </FormControl>
 
             <FormControl fullWidth margin="normal">
-              <InputLabel htmlFor="employee">Employee</InputLabel>
-              <Select
-                label="employee"
+              <Autocomplete
                 value={employee}
-                onChange={(e) => setEmployee(e.target.value as Employee)}
-                inputProps={{
-                  name: "employee",
-                  id: "employee",
+                onChange={(event, newValue) => {
+                  setEmployee(newValue as Employee);
                 }}
-              >
-                {employees?.map((emp) => (
-                  <MenuItem
-                    style={
-                      (emp.licenseExpiry &&
-                        parseDate(emp.licenseExpiry) < new Date()) ||
-                      (emp.medicalExpiry &&
-                        parseDate(emp.medicalExpiry) < new Date()) ||
-                      (emp.policeExpiry &&
-                        parseDate(emp.policeExpiry) < new Date()) ||
-                      (emp.WAFatigueExpiry &&
-                        parseDate(emp.WAFatigueExpiry) < new Date()) ||
-                      (emp.workRightStatus &&
-                        parseDate(emp.workRightStatus) < new Date())
-                        ? { backgroundColor: `rgba(255, 0, 0,0.5)` }
-                        : (emp.licenseExpiry &&
-                            parseDate(emp.licenseExpiry) <
-                              new Date(
-                                new Date().setDate(new Date().getDate() + 14)
-                              )) ||
-                          (emp.medicalExpiry &&
-                            parseDate(emp.medicalExpiry) <
-                              new Date(
-                                new Date().setDate(new Date().getDate() + 14)
-                              )) ||
-                          (emp.policeExpiry &&
-                            parseDate(emp.policeExpiry) <
-                              new Date(
-                                new Date().setDate(new Date().getDate() + 14)
-                              )) ||
-                          (emp.WAFatigueExpiry &&
-                            parseDate(emp.WAFatigueExpiry) <
-                              new Date(
-                                new Date().setDate(new Date().getDate() + 14)
-                              )) ||
-                          (emp.workRightStatus &&
-                            parseDate(emp.workRightStatus) <
-                              new Date(
-                                new Date().setDate(new Date().getDate() + 14)
-                              ))
-                        ? { backgroundColor: `rgba(255, 165, 0,0.5)` }
-                        : {}
-                    }
-                    key={emp.employeeNumber}
-                    value={emp.employeeNumber}
-                  >
-                    {`${emp.firstName} ${emp.lastName}`}
-                  </MenuItem>
-                ))}
-              </Select>
+                options={employees}
+                getOptionLabel={(option) =>
+                  `${option.firstName} ${option.lastName}`
+                }
+                renderOption={(props, option) => {
+                  const isRed =
+                    (option.licenseExpiry &&
+                      parseDate(option.licenseExpiry) < new Date()) ||
+                    (option.medicalExpiry &&
+                      parseDate(option.medicalExpiry) < new Date()) ||
+                    (option.policeExpiry &&
+                      parseDate(option.policeExpiry) < new Date()) ||
+                    (option.WAFatigueExpiry &&
+                      parseDate(option.WAFatigueExpiry) < new Date()) ||
+                    (option.workRightStatus &&
+                      parseDate(option.workRightStatus) < new Date());
+
+                  const isOrange =
+                    (option.licenseExpiry &&
+                      parseDate(option.licenseExpiry) <
+                        new Date(
+                          new Date().setDate(new Date().getDate() + 14)
+                        )) ||
+                    (option.medicalExpiry &&
+                      parseDate(option.medicalExpiry) <
+                        new Date(
+                          new Date().setDate(new Date().getDate() + 14)
+                        )) ||
+                    (option.policeExpiry &&
+                      parseDate(option.policeExpiry) <
+                        new Date(
+                          new Date().setDate(new Date().getDate() + 14)
+                        )) ||
+                    (option.WAFatigueExpiry &&
+                      parseDate(option.WAFatigueExpiry) <
+                        new Date(
+                          new Date().setDate(new Date().getDate() + 14)
+                        )) ||
+                    (option.workRightStatus &&
+                      parseDate(option.workRightStatus) <
+                        new Date(
+                          new Date().setDate(new Date().getDate() + 14)
+                        ));
+
+                  const backgroundColor = isRed
+                    ? "rgba(255, 0, 0, 0.5)"
+                    : isOrange
+                    ? "rgba(255, 165, 0, 0.5)"
+                    : "";
+
+                  return (
+                    <MenuItem
+                      {...props}
+                      key={option.employeeNumber}
+                      value={option.employeeNumber}
+                      style={{ backgroundColor }}
+                    >
+                      {`${option.firstName} ${option.lastName}`}
+                    </MenuItem>
+                  );
+                }}
+                renderInput={(params) => (
+                  <TextField {...params} label="Employee" variant="outlined" />
+                )}
+              />
             </FormControl>
             <FormControl fullWidth margin="normal">
-              <InputLabel htmlFor="truck">Truck</InputLabel>
-              <Select
+              <Autocomplete
                 value={truck}
-                onChange={(e) => setTruck(e.target.value as Truck)}
-                inputProps={{
-                  name: "Truck",
-                  id: "truck",
+                onChange={(event, newValue) => {
+                  setTruck(newValue as Truck);
                 }}
-              >
-                {trucks.map((t) => (
-                  <MenuItem
-                    style={
-                      (t.nextServiceDate &&
-                        parseDate(t.nextServiceDate) < new Date()) ||
-                      (t.regoExp && parseDate(t.regoExp) < new Date())
-                        ? { backgroundColor: `rgba(255, 0, 0,0.5)` }
-                        : (t.nextServiceDate &&
-                            parseDate(t.nextServiceDate) <
-                              new Date(
-                                new Date().setDate(new Date().getDate() + 14)
-                              )) ||
-                          (t.regoExp &&
-                            parseDate(t.regoExp) <
-                              new Date(
-                                new Date().setDate(new Date().getDate() + 14)
-                              ))
-                        ? { backgroundColor: `rgba(255, 165, 0,0.5)` }
-                        : {}
-                    }
-                    key={t.registration}
-                    value={t.registration}
-                  >
-                    {t.registration}
-                  </MenuItem>
-                ))}
-              </Select>
+                options={trucks}
+                getOptionLabel={(option) => option.registration}
+                renderOption={(props, option) => {
+                  const isRed =
+                    (option.nextServiceDate &&
+                      parseDate(option.nextServiceDate) < new Date()) ||
+                    (option.regoExp && parseDate(option.regoExp) < new Date());
+                  const isOrange =
+                    (option.nextServiceDate &&
+                      parseDate(option.nextServiceDate) <
+                        new Date(
+                          new Date().setDate(new Date().getDate() + 14)
+                        )) ||
+                    (option.regoExp &&
+                      parseDate(option.regoExp) <
+                        new Date(
+                          new Date().setDate(new Date().getDate() + 14)
+                        ));
+
+                  const backgroundColor = isRed
+                    ? "rgba(255, 0, 0, 0.5)"
+                    : isOrange
+                    ? "rgba(255, 165, 0, 0.5)"
+                    : "";
+
+                  return (
+                    <MenuItem
+                      {...props}
+                      key={option.registration}
+                      value={option.registration}
+                      style={{ backgroundColor }}
+                    >
+                      {option.registration}
+                    </MenuItem>
+                  );
+                }}
+                renderInput={(params) => (
+                  <TextField {...params} label="Truck" variant="outlined" />
+                )}
+              />
             </FormControl>
             <FormControl fullWidth margin="normal">
-              <InputLabel htmlFor="trailer1">Trailer1</InputLabel>
-              <Select
+              <Autocomplete
                 value={trailer1}
-                onChange={(e) => setTrailer1(e.target.value as Trailer)}
-                inputProps={{
-                  name: "trailer1",
-                  id: "trailer1",
+                onChange={(event, newValue) => {
+                  setTrailer1(newValue as Trailer);
                 }}
-              >
-                {trailers.map((trl) => (
-                  <MenuItem
-                    key={trl.registration}
-                    value={trl.registration}
-                    style={
-                      (trl.nextServiceDate &&
-                        parseDate(trl.nextServiceDate) < new Date()) ||
-                      (trl.regoExp && parseDate(trl.regoExp) < new Date())
-                        ? { backgroundColor: `rgba(255, 0, 0,0.5)` }
-                        : (trl.nextServiceDate &&
-                            parseDate(trl.nextServiceDate) <
-                              new Date(
-                                new Date().setDate(new Date().getDate() + 14)
-                              )) ||
-                          (trl.regoExp &&
-                            parseDate(trl.regoExp) <
-                              new Date(
-                                new Date().setDate(new Date().getDate() + 14)
-                              ))
-                        ? { backgroundColor: `rgba(255, 165, 0,0.5)` }
-                        : {}
-                    }
-                  >
-                    {trl.registration}
-                  </MenuItem>
-                ))}
-              </Select>
+                options={trailers}
+                getOptionLabel={(option) => option.registration}
+                renderOption={(props, option) => {
+                  const isRed =
+                    (option.nextServiceDate &&
+                      parseDate(option.nextServiceDate) < new Date()) ||
+                    (option.regoExp && parseDate(option.regoExp) < new Date());
+                  const isOrange =
+                    (option.nextServiceDate &&
+                      parseDate(option.nextServiceDate) <
+                        new Date(
+                          new Date().setDate(new Date().getDate() + 14)
+                        )) ||
+                    (option.regoExp &&
+                      parseDate(option.regoExp) <
+                        new Date(
+                          new Date().setDate(new Date().getDate() + 14)
+                        ));
+
+                  const backgroundColor = isRed
+                    ? "rgba(255, 0, 0, 0.5)"
+                    : isOrange
+                    ? "rgba(255, 165, 0, 0.5)"
+                    : "";
+
+                  return (
+                    <MenuItem
+                      {...props}
+                      key={option.registration}
+                      value={option.registration}
+                      style={{ backgroundColor }}
+                    >
+                      {option.registration}
+                    </MenuItem>
+                  );
+                }}
+                renderInput={(params) => (
+                  <TextField {...params} label="Trailer1" variant="outlined" />
+                )}
+              />
             </FormControl>
             <FormControl fullWidth margin="normal">
-              <InputLabel htmlFor="trailer2">Trailer2</InputLabel>
-              <Select
-                inputProps={{
-                  name: "trailer2",
-                  id: "trailer2",
-                }}
+              <Autocomplete
                 value={trailer2}
-                onChange={(e) => setTrailer2(e.target.value as Trailer)}
-              >
-                {trailers.map((trl) => (
-                  <MenuItem
-                    key={trl.registration}
-                    value={trl.registration}
-                    style={
-                      (trl.nextServiceDate &&
-                        parseDate(trl.nextServiceDate) < new Date()) ||
-                      (trl.regoExp && parseDate(trl.regoExp) < new Date())
-                        ? { backgroundColor: `rgba(255, 0, 0,0.5)` }
-                        : (trl.nextServiceDate &&
-                            parseDate(trl.nextServiceDate) <
-                              new Date(
-                                new Date().setDate(new Date().getDate() + 14)
-                              )) ||
-                          (trl.regoExp &&
-                            parseDate(trl.regoExp) <
-                              new Date(
-                                new Date().setDate(new Date().getDate() + 14)
-                              ))
-                        ? { backgroundColor: `rgba(255, 165, 0,0.5)` }
-                        : {}
-                    }
-                  >
-                    {trl.registration}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl fullWidth margin="normal">
-              <InputLabel htmlFor="trailer3">Trailer3</InputLabel>
-              <Select
-                inputProps={{
-                  name: "trailer3",
-                  id: "trailer3",
+                onChange={(event, newValue) => {
+                  setTrailer2(newValue as Trailer);
                 }}
-                value={trailer3}
-                onChange={(e) => setTrailer3(e.target.value as Trailer)}
-              >
-                {trailers.map((trl) => (
-                  <MenuItem
-                    key={trl.registration}
-                    value={trl.registration}
-                    style={
-                      (trl.nextServiceDate &&
-                        parseDate(trl.nextServiceDate) < new Date()) ||
-                      (trl.regoExp && parseDate(trl.regoExp) < new Date())
-                        ? { backgroundColor: `rgba(255, 0, 0,0.5)` }
-                        : (trl.nextServiceDate &&
-                            parseDate(trl.nextServiceDate) <
-                              new Date(
-                                new Date().setDate(new Date().getDate() + 14)
-                              )) ||
-                          (trl.regoExp &&
-                            parseDate(trl.regoExp) <
-                              new Date(
-                                new Date().setDate(new Date().getDate() + 14)
-                              ))
-                        ? { backgroundColor: `rgba(255, 165, 0,0.5)` }
-                        : {}
-                    }
-                  >
-                    {trl.registration}
-                  </MenuItem>
-                ))}
-              </Select>
+                options={trailers}
+                getOptionLabel={(option) => option.registration}
+                renderOption={(props, option) => {
+                  const isRed =
+                    (option.nextServiceDate &&
+                      parseDate(option.nextServiceDate) < new Date()) ||
+                    (option.regoExp && parseDate(option.regoExp) < new Date());
+                  const isOrange =
+                    (option.nextServiceDate &&
+                      parseDate(option.nextServiceDate) <
+                        new Date(
+                          new Date().setDate(new Date().getDate() + 14)
+                        )) ||
+                    (option.regoExp &&
+                      parseDate(option.regoExp) <
+                        new Date(
+                          new Date().setDate(new Date().getDate() + 14)
+                        ));
+
+                  const backgroundColor = isRed
+                    ? "rgba(255, 0, 0, 0.5)"
+                    : isOrange
+                    ? "rgba(255, 165, 0, 0.5)"
+                    : "";
+
+                  return (
+                    <MenuItem
+                      {...props}
+                      key={option.registration}
+                      value={option.registration}
+                      style={{ backgroundColor }}
+                    >
+                      {option.registration}
+                    </MenuItem>
+                  );
+                }}
+                renderInput={(params) => (
+                  <TextField {...params} label="Trailer2" variant="outlined" />
+                )}
+              />
             </FormControl>
             <FormControl fullWidth margin="normal">
-              <InputLabel htmlFor="trailer4">Trailer4</InputLabel>
+              <Autocomplete
+                value={trailer3}
+                onChange={(event, newValue) => {
+                  setTrailer3(newValue as Trailer);
+                }}
+                options={trailers}
+                getOptionLabel={(option) => option.registration}
+                renderOption={(props, option) => {
+                  const isRed =
+                    (option.nextServiceDate &&
+                      parseDate(option.nextServiceDate) < new Date()) ||
+                    (option.regoExp && parseDate(option.regoExp) < new Date());
+                  const isOrange =
+                    (option.nextServiceDate &&
+                      parseDate(option.nextServiceDate) <
+                        new Date(
+                          new Date().setDate(new Date().getDate() + 14)
+                        )) ||
+                    (option.regoExp &&
+                      parseDate(option.regoExp) <
+                        new Date(
+                          new Date().setDate(new Date().getDate() + 14)
+                        ));
+
+                  const backgroundColor = isRed
+                    ? "rgba(255, 0, 0, 0.5)"
+                    : isOrange
+                    ? "rgba(255, 165, 0, 0.5)"
+                    : "";
+
+                  return (
+                    <MenuItem
+                      {...props}
+                      key={option.registration}
+                      value={option.registration}
+                      style={{ backgroundColor }}
+                    >
+                      {option.registration}
+                    </MenuItem>
+                  );
+                }}
+                renderInput={(params) => (
+                  <TextField {...params} label="Trailer3" variant="outlined" />
+                )}
+              />
+            </FormControl>
+            <FormControl fullWidth margin="normal">
               <Autocomplete
                 value={trailer4}
                 onChange={(event, newValue) => {
@@ -533,13 +589,14 @@ const NewJobModal: React.FC<NewJobModalProps> = ({ show, handleClose }) => {
                 )}
               />
             </FormControl>
-            <TextField
-              fullWidth
-              value={price}
-              margin="normal"
-              label="Price"
-              onChange={(e) => setPrice(Number(e.target.value))}
-            />
+            <FormControl fullWidth margin="normal">
+              <TextField
+                label="Comments"
+                variant="outlined"
+                value={comments}
+                onChange={(e) => setComments(e.target.value)}
+              />
+            </FormControl>
           </Box>
         </DialogContent>
         <Button onClick={handleClose} color="primary">

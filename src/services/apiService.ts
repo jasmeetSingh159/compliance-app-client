@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { Company, Employee, Job, Truck, Trailer } from "../types";
-import { auth } from '../firebase';
+import { auth } from "../firebase";
 
 const API_BASE_URL = `https://server.fleetwisesolutions.au`; // Replace with your backend server URL
 
@@ -8,12 +8,9 @@ const apiService = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
-    "x-api-key": "wagB6-nXfBild2ZdAtp-SfvRRZM" 
+    "x-api-key": "wagB6-nXfBild2ZdAtp-SfvRRZM",
   },
 });
-
-
-
 
 const mapCompanyData = (data: any[]): Company[] => {
   return data.map((item, index) => ({
@@ -69,28 +66,29 @@ const mapJobData = (data: any[]): Job[] => {
   return data.map((item, index) => ({
     jobId: item[0],
     company: item[1],
-    pickupCity: item[2],
-    dropOffCity: item[3],
-    pickupDate: item[4],
-    deliveryDate: item[5],
-    deliveryType: item[6],
-    employee: item[7],
-    truck: item[8],
-    trailer1: item[9],
-    trailer2: item[10],
-    trailer3: item[11],
-    trailer4: item[12],
-    price: item[13],
-    status: item[14],
-    preTrip: item[15],
-    safeJourneyPlan: item[16],
-    pods: item[17],
-    customerRate: item[18],
-    customerGst: item[19],
-    customerAmount: item[20],
-    driverRate: item[21],
-    driverGst: item[22],
-    driverAmount: item[23],
+    manifest: item[2],
+    pickupCity: item[3],
+    dropOffCity: item[4],
+    pickupDate: item[5],
+    deliveryDate: item[6],
+    deliveryType: item[7],
+    employee: item[8],
+    truck: item[9],
+    trailer1: item[10],
+    trailer2: item[11],
+    trailer3: item[12],
+    trailer4: item[13],
+    comments: item[14],
+    status: item[15],
+    preTrip: item[16],
+    safeJourneyPlan: item[17],
+    pods: item[18],
+    customerRate: item[19],
+    customerGst: item[20],
+    customerAmount: item[21],
+    driverRate: item[22],
+    driverGst: item[23],
+    driverAmount: item[24],
   }));
 };
 

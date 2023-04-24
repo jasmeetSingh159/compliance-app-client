@@ -44,6 +44,7 @@ const CreatedJobs: React.FC = () => {
   const handleSubmit = (e: any) => {
     console.log(e);
     updateJob(selectedJob!.jobId, e);
+    setShowModal(false);
   };
 
   return (
