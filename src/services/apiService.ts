@@ -1,16 +1,19 @@
 import axios, { AxiosResponse } from "axios";
 import { Company, Employee, Job, Truck, Trailer } from "../types";
+import { auth } from '../firebase';
 
-const API_BASE_URL = `http://localhost:5000`; // Replace with your backend server URL
+const API_BASE_URL = `https://server.fleetwisesolutions.au`; // Replace with your backend server URL
 
 const apiService = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
+    "x-api-key": "wagB6-nXfBild2ZdAtp-SfvRRZM" 
   },
 });
 
-const customer = "FHT";
+
+
 
 const mapCompanyData = (data: any[]): Company[] => {
   return data.map((item, index) => ({
@@ -135,48 +138,58 @@ const handleApiResponse = (
 };
 
 export const getCompanies = async () => {
+  let customer = auth.currentUser?.email || "";
   const response = await apiService.get(`/companies/${customer}`);
   return handleApiResponse(response, mapCompanyData);
 };
 
 export const getEmployees = async () => {
+  let customer = auth.currentUser?.email || "";
   const response = await apiService.get(`/employees/${customer}`);
   return handleApiResponse(response, mapEmployeeData);
 };
 
 export const getTrucks = async () => {
+  let customer = auth.currentUser?.email || "";
   const response = await apiService.get(`/trucks/${customer}`);
   return mapTruckData(response.data);
 };
 
 export const getTrailers = async () => {
+  let customer = auth.currentUser?.email || "";
   const response = await apiService.get(`/trailers/${customer}`);
   return mapTrailerData(response.data);
 };
 
 export const getJobs = async () => {
+  let customer = auth.currentUser?.email || "";
   const response = await apiService.get(`/jobs/${customer}`);
   return handleApiResponse(response, mapJobData);
 };
 
 export const getJobById = async (jobId: string) => {
+  let customer = auth.currentUser?.email || "";
   const response = await apiService.get(`/jobs//${customer}/${jobId}`);
   return handleApiResponse(response, mapJobData)[0];
 };
 
 export const createJob = async (jobData: object) => {
+  let customer = auth.currentUser?.email || "";
   return await apiService.post(`/jobs/${customer}`, jobData);
 };
 
 export const updateJob = async (jobId: string, jobData: object) => {
+  let customer = auth.currentUser?.email || "";
   return await apiService.put(`/jobs/${customer}/${jobId}`, jobData);
 };
 
 export const deleteJob = async (jobId: string) => {
+  let customer = auth.currentUser?.email || "";
   return await apiService.delete(`/jobs/${customer}/${jobId}`);
 };
 
 export const getImage = async (fileName: string, type: string) => {
+  let customer = auth.currentUser?.email || "";
   const response = await apiService.get(`/images/${fileName}/${type}`);
   return response.data.url;
 };

@@ -59,7 +59,7 @@ const UnpaidJobs: React.FC = () => {
   return (
     <Box>
       <Typography variant="h4" sx={{ mb: 3 }}>
-        Unpaid Jobs
+        Billed Jobs
       </Typography>
       <TableContainer>
         <Table>

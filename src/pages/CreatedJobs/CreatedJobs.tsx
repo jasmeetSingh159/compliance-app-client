@@ -49,7 +49,7 @@ const CreatedJobs: React.FC = () => {
   return (
     <Box>
       <Typography variant="h4" sx={{ mb: 3 }}>
-        Created Jobs
+        Active Jobs
       </Typography>
       <TableContainer>
         <Table>
